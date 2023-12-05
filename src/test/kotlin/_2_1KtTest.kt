@@ -1,4 +1,5 @@
 import org.junit.jupiter.api.assertThrows
+import two.Color
 import kotlin.test.Test
 
 class _2_1KtTest {
