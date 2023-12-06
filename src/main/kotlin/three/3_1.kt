@@ -11,19 +11,6 @@ fun main(args: Array<String>) {
         val neighbourLines =
             arrayListOf(lines.getOrNull(index - 1), lines.getOrNull(index + 1)).filterNotNull()
 
-        println(
-            "${index + 1} ${
-                numbersFrom(s).filterIndexed { index, pair ->
-                    !isAdjacent(
-                        pair.first,
-                        pair.second,
-                        s,
-                        neighbourLines
-                    )
-                }
-            }"
-        )
-
         numbersFrom(s).filterIndexed { index, pair ->
             isAdjacent(
                 pair.first,
