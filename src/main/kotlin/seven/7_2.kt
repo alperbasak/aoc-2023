@@ -10,20 +10,22 @@ fun main() {
         line.first() to line.last().toInt()
     }
 
-    val sortedHands = hands.sortedWith(rankComparator)
+    val sortedHands = hands.sortedWith(jokeredRankComparator)
     val sum = sortedHands.mapIndexed { index, pair -> pair.second * (index + 1) }.sum()
 
     println(sum)
 }
 
-val rankComparator = Comparator { pair1: Pair<String, Int>, pair2: Pair<String, Int> ->
-    val typeDiff = jokeredType(pair1.first) - jokeredType(pair2.first)
-    if (typeDiff == 0) labelCompare(pair1.first, pair2.first) else typeDiff
-}
+private val jokeredRankComparator =
+    Comparator { pair1: Pair<String, Int>, pair2: Pair<String, Int> ->
+        val typeDiff = jokeredType(pair1.first) - jokeredType(pair2.first)
+        if (typeDiff == 0) labelCompare(pair1.first, pair2.first) else typeDiff
+    }
 
-val cardLabels = arrayOf('A', 'K', 'Q', 'J', 'T', '9', '8', '7', '6', '5', '4', '3', '2')
+private val jokeredCardLabels =
+    arrayOf('A', 'K', 'Q', 'T', '9', '8', '7', '6', '5', '4', '3', '2', 'J')
 
-private fun labelIndex(c: Char) = cardLabels.indexOf(c)
+private fun labelIndex(c: Char) = jokeredCardLabels.indexOf(c)
 
 private fun labelCompare(first: String, second: String): Int {
     first.forEachIndexed { index, c ->
@@ -33,12 +35,19 @@ private fun labelCompare(first: String, second: String): Int {
     return 0
 }
 
-val IllegalArgumentException = IllegalArgumentException("Not Possible")
 
-fun type(hand: String): Int {
-    val charCounts = hand.associateWith { c -> hand.count { it == c } }
+fun jokeredType(hand: String): Int {
+    val charCounts = hand.associateWith { c -> hand.count { it == c } }.toMutableMap()
 
-    return when (charCounts.values.max()) {
+    if (charCounts.contains('J')) {
+        val jokerCount = charCounts.remove('J')
+        if (jokerCount == 5) return 7
+        val maxEntry = charCounts.maxBy { it.value }
+        charCounts[maxEntry.key] = charCounts[maxEntry.key]!! + jokerCount!!
+    }
+
+
+    return when (charCounts.maxOf { it.value }) {
         5 -> 7
         4 -> 6
         3 -> when (charCounts.values.size) {
