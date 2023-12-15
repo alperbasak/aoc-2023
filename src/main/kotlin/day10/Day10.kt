@@ -6,15 +6,51 @@ fun main() {
     val lines = file.readLines()
 
     println(one(lines))
+    println(two(lines))
 }
 
+fun two(lines: List<String>): Int {
+    val pipes = pipes(lines)
+
+    val sidescanned = lines.mapIndexed { row, line ->
+        var isInside = false
+        var previousCorner: Char? = null
+
+        line.mapIndexed { col, char ->
+            if (pipes.contains(Position(row, col, char))) {
+
+                if (char == '|') {
+                    isInside = isInside.not()
+                } else if (char in arrayOf('L', '7', 'F', 'J', 'S')) {
+                    if (previousCorner != null) {
+                        // check for U shape
+                        if (!((previousCorner == 'L' || previousCorner == 'S') && char == 'J') && !(previousCorner == 'F' && char == '7')) {
+                            isInside = isInside.not()
+                        }
+                        previousCorner = null
+                    } else
+                        previousCorner = char
+                }
+                char
+            } else if (isInside) 'I' else 'O'
+        }
+    }
+
+    return sidescanned.sumOf { it.count { it == 'I' } }
+}
+
+
 fun one(lines: List<String>): Int {
+    return pipes(lines).size / 2
+}
+
+fun pipes(lines: List<String>): List<Position> {
     val row = lines.indexOfFirst { it.contains('S') }
     val col = lines[row].indexOfFirst { it == 'S' }
 
-    val positions = nextPosition(Position(row, col, 'S'), null, lines, emptyList())
-    return positions.size / 2
+    return nextPosition(Position(row, col, 'S'), null, lines, emptyList())
 }
+
 
 tailrec fun nextPosition(
     position: Position, prevPosition: Position?, lines: List<String>, positions: List<Position>
@@ -30,27 +66,40 @@ tailrec fun nextPosition(
     }
 
     val direction = when {
-        adjacentPipes['N']?.symbol in arrayOf('|', 'F', '7')
-                && currentSymbol in arrayOf('|', 'L', 'J', 'S') -> 'N'
+        adjacentPipes['N']?.symbol in arrayOf('|', 'F', '7') && currentSymbol in arrayOf(
+            '|',
+            'L',
+            'J',
+            'S'
+        ) -> 'N'
 
-        adjacentPipes['E']?.symbol in arrayOf('-', '7', 'J')
-                && currentSymbol in arrayOf('-', 'F', 'L', 'S') -> 'E'
+        adjacentPipes['E']?.symbol in arrayOf('-', '7', 'J') && currentSymbol in arrayOf(
+            '-',
+            'F',
+            'L',
+            'S'
+        ) -> 'E'
 
-        adjacentPipes['S']?.symbol in arrayOf('|', 'L', 'J')
-                && currentSymbol in arrayOf('|', '7', 'F', 'S') -> 'S'
+        adjacentPipes['S']?.symbol in arrayOf('|', 'L', 'J') && currentSymbol in arrayOf(
+            '|',
+            '7',
+            'F',
+            'S'
+        ) -> 'S'
 
-        adjacentPipes['W']?.symbol in arrayOf('-', 'F', 'L')
-                && currentSymbol in arrayOf('-', 'J', '7', 'S') -> 'W'
+        adjacentPipes['W']?.symbol in arrayOf('-', 'F', 'L') && currentSymbol in arrayOf(
+            '-',
+            'J',
+            '7',
+            'S'
+        ) -> 'W'
 
         else -> '-'
     }
 
     if (direction != '-') {
         return nextPosition(
-            adjacentPipes.getValue(direction),
-            position,
-            lines,
-            positions + position
+            adjacentPipes.getValue(direction), position, lines, positions + position
         )
     }
 
