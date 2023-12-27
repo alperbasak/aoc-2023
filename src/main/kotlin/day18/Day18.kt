@@ -2,6 +2,7 @@ package day18
 
 import day11.Position
 import util.lines
+import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 
@@ -18,29 +19,6 @@ fun one(lines: List<String>): Int {
     val filledDigPlan = digPlan.fill()
 
     return filledDigPlan.map.sumOf { it.count { it != '.' } }
-}
-
-fun two(lines: List<String>): Long {
-    val hexedLines = swapCode(lines)
-    val digPlan = createDigPlan(hexedLines)
-    val filledDigPlan = digPlan.fill()
-
-    return filledDigPlan.map.sumOf { it.count { it != '.' }.toLong() }
-}
-
-fun swapCode(lines: List<String>): List<String> {
-    return lines.map {
-        val line = it.split(" ")
-        val meters = line[2].substring(2, 7).toLong(radix = 16)
-        val direction = when (line[2][7]) {
-            '0' -> 'R'
-            '1' -> 'D'
-            '2' -> 'L'
-            '3' -> 'U'
-            else -> error("Illegal direction")
-        }
-        "$direction $meters "
-    }
 }
 
 fun createDigPlan(lines: List<String>): DigPlan {
@@ -145,3 +123,57 @@ data class DigPlan(val currentPosition: Position, val map: Array<Array<Char>>) {
         return DigPlan(currentPosition, sidescanned)
     }
 }
+
+// :(
+fun two(lines: List<String>): Long {
+    val hexedLines = swapCode(lines)
+
+    val digPlan = hexedLines.map { shiftDirection(it.first).multiply(it.second) }
+    val corners = corners(digPlan)
+
+    val area = shoelaceFormula(corners)
+    val perimeter = perimeter(digPlan)
+
+    return picksTheorem(area, perimeter)
+}
+
+fun perimeter(digPlan: List<Vector2>): Long = digPlan.sumOf { abs(it.x) + abs(it.y) }
+
+
+fun corners(digPlan: List<Vector2>): List<Vector2> {
+    return digPlan.scan(Vector2(0, 0)) { acc: Vector2, shiftVector: Vector2 ->
+        acc.add(shiftVector)
+    }
+}
+
+fun swapCode(lines: List<String>): List<Pair<Char, Long>> {
+    return lines.map {
+        val hex = it.split(" ").last().removeSurrounding("(#", ")")
+        Pair(hex.last(), hex.substring(0..hex.length - 2).toLong(radix = 16))
+    }
+}
+
+private fun shoelaceFormula(corners: List<Vector2>): Long = corners.zipWithNext { a, b ->
+    a.x * b.y - a.y * b.x
+}.sum() / 2
+
+private fun picksTheorem(area: Long, perimeter: Long): Long {
+    // A = i + p/2 -1
+    // i + p = A + p/2 + 1
+    return area + perimeter / 2 + 1
+}
+
+
+data class Vector2(val x: Long, val y: Long) {
+    fun add(other: Vector2) = Vector2(x + other.x, y + other.y)
+    fun multiply(factor: Long) = Vector2(x * factor, y * factor)
+}
+
+private fun shiftDirection(direction: Char) = when (direction) {
+    '0', 'R' -> Vector2(1, 0)
+    '1', 'D' -> Vector2(0, 1)
+    '2', 'L' -> Vector2(-1, 0)
+    '3', 'U' -> Vector2(0, -1)
+    else -> throw Exception("Unknown direction")
+}
+
