@@ -1,4 +1,4 @@
-package day12
+package day18
 
 import day11.Position
 import util.lines
@@ -7,7 +7,7 @@ import kotlin.math.min
 
 
 fun main() {
-    val lines = lines("/12.txt")
+    val lines = lines("/18.txt")
 
     println(one(lines))
     println(two(lines))

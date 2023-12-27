@@ -1,14 +1,14 @@
-package day12
+package day18
 
 import org.junit.jupiter.api.Test
 import util.lines
 import kotlin.test.assertContentEquals
 
-class Day12KtTest {
+class Day18KtTest {
 
     @Test
     fun one() {
-        val lines = lines("/12.txt")
+        val lines = lines("/18.txt")
 
         val expected = arrayOf(
             "#######",
