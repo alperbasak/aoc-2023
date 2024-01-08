@@ -1,7 +1,6 @@
 package day13
 
 import util.lines
-import kotlin.math.abs
 import kotlin.math.min
 
 fun one(patterns: List<List<String>>): Int =
@@ -25,19 +24,13 @@ private fun List<String>.reflection(): Int {
         }
     }
 
-    val equalRows = this.mapIndexedNotNull { index, row: String ->
-        val filter = this.mapIndexedNotNull { filterIndex, it ->
-            if (filterIndex > index && it == row && (abs(index - filterIndex) == 1)) {
-                filterIndex
-            } else null
-        }
-        if (filter.isNotEmpty()) {
-            if (filter.size > 1) error("Should Not happen")
-            Pair(index, filter[0])
+    val equalRows = zipWithNext().mapIndexedNotNull { index, pair ->
+        if (pair.first == pair.second) {
+            Pair(index, index + 1)
         } else null
     }
 
-    return equalRows.filter { isMirror(it) }.sumOf { it.first+1 }
+    return equalRows.filter { isMirror(it) }.sumOf { it.first + 1 }
 }
 
 fun main() {
