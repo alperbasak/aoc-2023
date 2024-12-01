@@ -1,9 +1,10 @@
 package day1
 
+import util.lines
+
 fun main(args: Array<String>) {
     // parse file from resources
-    val file = object {}.javaClass.getResourceAsStream("1.txt")!!.bufferedReader()
-    val lines = file.useLines { it.toList() }
+    val lines = lines("/1.txt")
 
     val sumList = lines.map() { line ->
         val digits = line.filter { char ->

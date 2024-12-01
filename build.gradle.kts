@@ -1,6 +1,5 @@
 plugins {
-    kotlin("jvm") version "1.9.21"
-    application
+    kotlin("jvm") version "2.1.0"
 }
 
 group = "com.alperbasak"
@@ -10,19 +9,11 @@ repositories {
     mavenCentral()
 }
 
-dependencies {
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0-RC")
-    testImplementation(kotlin("test"))
-}
-
 tasks.test {
     useJUnitPlatform()
 }
 
 kotlin {
-    jvmToolchain(17)
+    jvmToolchain(23)
 }
 
-application {
-    mainClass.set("MainKt")
-}

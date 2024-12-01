@@ -13,6 +13,7 @@ class Day13KtTest {
             lines.mapIndexedNotNull { index: Int, s: String -> if (s.isEmpty()) index else null }
         val patterns = separators.zipWithNext { a, b -> lines.subList(a + 1, b) }
 
-        assertEquals(405, one(patterns))
+        val fixedPattern = patterns.map { fixSmudge(it) }
+        assertEquals(400, one(fixedPattern))
     }
 }
