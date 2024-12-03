@@ -8,6 +8,8 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/year2023" />
+            <option value="$PROJECT_DIR$/year2024" />
           </set>
         </option>
       </GradleProjectSettings>

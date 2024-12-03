@@ -11,3 +11,4 @@ plugins {
 
 rootProject.name = "aoc"
 include("year2023")
+include("year2024")
